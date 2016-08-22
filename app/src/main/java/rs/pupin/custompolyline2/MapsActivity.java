@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void onClickAdd(View view) {
-        Intent intent = new Intent(MapsActivity.this, ShapesListActivity.class);
+        Intent intent = new Intent(MapsActivity.this, LayerListActivity.class);
         startActivity(intent);
     }
 

@@ -1,7 +1,10 @@
 package rs.pupin.custompolyline2;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,11 +27,29 @@ public class LayerListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_layer_list);
+        AdapterView.OnItemClickListener itemClickListener =
+                new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> listView,
+                                            View v,
+                                            int position,
+                                            long id) {
+                        //TODO: figure out position dynamically
+                        //TODO: put in intent which layer was chosen
+                            startIntent();
+
+                    }
+                };
 
         listView = (ListView) findViewById(android.R.id.list);
 
         displayResultList(getEntries());
     }
+
+    private void startIntent() {
+        Intent intent = new Intent(this, ShapesListActivity.class);
+        startActivity(intent);
+    }
+
     private List<String> getEntries() {
         LayerDao layerDao = daoSession.getLayerDao();
         List<Layer> layers = layerDao.loadAll();
@@ -42,10 +63,6 @@ public class LayerListActivity extends ListActivity {
     }
 
     private void displayResultList(List<String> result) {
-        TextView tView = new TextView(this);
-        tView.setText("This data is retrieved from the database and only 4 " +
-                "of the results are displayed");
-        listView.addHeaderView(tView);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
         setListAdapter(arrayAdapter);
         listView.setTextFilterEnabled(true);
