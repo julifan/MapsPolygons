@@ -1,0 +1,9 @@
+apply plugin: 'application'
+apply plugin: 'java'
+
+mainClassName = "rs.pupin.leasegreendao.LeaseDaoGenerator"
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('libs/greendao-generator-2.1.0.jar')
+    compile files('libs/freemarker-2.3.25-incubating.jar')
+}

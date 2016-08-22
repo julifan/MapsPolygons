@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CustomPolyline2</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="welcome">Welcome to custom Polygons!</string>
+    <string name="startPolygon">Make Polygon out of it!</string>
+    <string name="startPolyline">Make Polyline out of it!</string>
+    <string name="stop">Finish</string>
+    <string name="title_activity_custom_polyline2">CustomPolyline2Activity</string>
+    <string name="title_activity_main_list">MainListActivity</string>
+    <string name="add">Add something new</string>
+    <string-array name="options">
+        <item>Polygon</item>
+        <item>Polyline</item>
+        <item>Point of Interest</item>
+        <item>Ground Overlay</item>
+    </string-array>
+    <string name="title_activity_drawing_maps">Map</string>
+    <string name="ok">OK! Store this!</string>
+    <string name="empty"></string>
+</resources>
