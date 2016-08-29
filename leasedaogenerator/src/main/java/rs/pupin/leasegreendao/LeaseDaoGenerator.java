@@ -17,12 +17,12 @@ public class LeaseDaoGenerator {
         Schema schema = new Schema(3, "rs.pupin.model");
         //map layers
         Entity layer = schema.addEntity("Layer");
-        layer.addIdProperty();
+        layer.addIdProperty().autoincrement();
         layer.addStringProperty("name");
 
         //polyline table
         Entity polyline = schema.addEntity("Polyline");
-        polyline.addIdProperty();
+        polyline.addIdProperty().autoincrement();
         polyline.addDoubleProperty("lat");
         polyline.addDoubleProperty("longit");
         polyline.addStringProperty("markers");
@@ -32,7 +32,7 @@ public class LeaseDaoGenerator {
 
         //polygon table
         Entity polygon = schema.addEntity("Polygon");
-        polygon.addIdProperty();
+        polygon.addIdProperty().autoincrement();
         polygon.addDoubleProperty("lat");
         polygon.addDoubleProperty("longit");
         polygon.addStringProperty("markers");
@@ -42,7 +42,7 @@ public class LeaseDaoGenerator {
 
         //point of interest table
         Entity pointOfInterest = schema.addEntity("PointOfInterest");
-        pointOfInterest.addIdProperty();
+        pointOfInterest.addIdProperty().autoincrement();
         pointOfInterest.addStringProperty("comment");
         pointOfInterest.addDoubleProperty("lat");
         pointOfInterest.addDoubleProperty("longit");
@@ -51,7 +51,7 @@ public class LeaseDaoGenerator {
         pointOfInterest.addToOne(layer, layerIdProperty3);
 
         Entity groundOverlay = schema.addEntity("GroundOverlay");
-        groundOverlay.addIdProperty();
+        groundOverlay.addIdProperty().autoincrement();
         groundOverlay.addStringProperty("path");
         groundOverlay.addDoubleProperty("lat");
         groundOverlay.addDoubleProperty("longit");

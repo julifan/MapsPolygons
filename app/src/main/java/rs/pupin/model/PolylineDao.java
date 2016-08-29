@@ -49,7 +49,7 @@ public class PolylineDao extends AbstractDao<Polyline, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"POLYLINE\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"LAT\" REAL," + // 1: lat
                 "\"LONGIT\" REAL," + // 2: longit
                 "\"MARKERS\" TEXT," + // 3: markers

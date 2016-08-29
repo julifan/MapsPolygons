@@ -49,7 +49,7 @@ public class PointOfInterestDao extends AbstractDao<PointOfInterest, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"POINT_OF_INTEREST\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"COMMENT\" TEXT," + // 1: comment
                 "\"LAT\" REAL," + // 2: lat
                 "\"LONGIT\" REAL," + // 3: longit

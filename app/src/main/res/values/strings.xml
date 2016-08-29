@@ -17,4 +17,5 @@
     <string name="title_activity_drawing_maps">Map</string>
     <string name="ok">OK! Store this!</string>
     <string name="empty"></string>
+    <string name="create">Create Layer!</string>
 </resources>

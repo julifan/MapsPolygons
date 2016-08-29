@@ -23,6 +23,8 @@ public class LayerListActivity extends ListActivity {
 
     private ListView listView;
 
+    ArrayAdapter<String> arrayAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,18 +37,37 @@ public class LayerListActivity extends ListActivity {
                                             long id) {
                         //TODO: figure out position dynamically
                         //TODO: put in intent which layer was chosen
-                            startIntent();
-
+                            if (position == 0) {
+                                //start activity for creating a new layer.
+                                createLayer();
+                            } else {
+                            String value = (String) arrayAdapter.getItem(position);
+                            startIntent(position, value);}
                     }
                 };
 
         listView = (ListView) findViewById(android.R.id.list);
-
+        try {
+            listView.setOnItemClickListener(itemClickListener);
+        } catch (NullPointerException e) {
+            //nothing happens
+        }
+        daoSession = ((CustomPolyline2Application) getApplicationContext()).getDaoSession();
         displayResultList(getEntries());
     }
 
-    private void startIntent() {
+    /**
+     * starts activity where layername can by typed in
+     */
+    private void createLayer() {
+        Intent intent = new Intent(this, CreateLayerActivity.class);
+        startActivity(intent);
+    }
+
+    private void startIntent(int position, String value) {
         Intent intent = new Intent(this, ShapesListActivity.class);
+        intent.putExtra("position", position);
+        intent.putExtra("value", value);
         startActivity(intent);
     }
 
@@ -63,7 +84,7 @@ public class LayerListActivity extends ListActivity {
     }
 
     private void displayResultList(List<String> result) {
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
         setListAdapter(arrayAdapter);
         listView.setTextFilterEnabled(true);
     }

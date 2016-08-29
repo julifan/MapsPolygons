@@ -9,6 +9,10 @@ import android.widget.ListView;
 
 public class ShapesListActivity extends AppCompatActivity {
 
+    //TODO: initialize properly
+    int layerPos;
+    String layerName;
+
     /**
      * is called from MapsActivity when something new should be added.
      * displays a listView where you can choose:
@@ -30,10 +34,14 @@ public class ShapesListActivity extends AppCompatActivity {
                                             long id) {
                         //TODO: figure out position dynamically
                         switch (position) {
-                            case 0: makeIntent(ShapesEnum.POLYGON);
-                            case 1: makeIntent(ShapesEnum.POLYLINE);
-                            case 2: makeIntent(ShapesEnum.POINT_OF_INTEREST);
-                            case 3: makeIntent(ShapesEnum.GROUND_OVERLAY);
+                            case 0:
+                                makeIntent(ShapesEnum.POLYGON);
+                            case 1:
+                                makeIntent(ShapesEnum.POLYLINE);
+                            case 2:
+                                makeIntent(ShapesEnum.POINT_OF_INTEREST);
+                            case 3:
+                                makeIntent(ShapesEnum.GROUND_OVERLAY);
                         }
                     }
                 };
@@ -44,6 +52,15 @@ public class ShapesListActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             //nothing happens
         }
+
+        Intent intent = getIntent();
+        //try {
+        layerPos = intent.getIntExtra("position", 0);
+        layerName = intent.getStringExtra("value");
+
+        //} catch (Exception e) {
+
+        //}
     }
 
     /**
@@ -56,6 +73,8 @@ public class ShapesListActivity extends AppCompatActivity {
         Intent intent = new Intent(this,
                 DrawingMapsActivity.class);
         intent.putExtra("item", shapesEnum);
+        intent.putExtra("position", layerPos);
+        intent.putExtra("value", layerName);
         startActivity(intent);
     }
 }

@@ -47,6 +47,11 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
      */
     private ShapesEnum item;
     /**
+     * info about the layer
+     */
+    private int layerPos;
+    private String layerName;
+    /**
      * db
      */
     private DaoSession daoSession;
@@ -64,6 +69,9 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
         try {
             Intent intent = getIntent();
             item = (ShapesEnum) intent.getSerializableExtra("item");
+            //TODO: set better default value and check for it later on
+            layerPos = intent.getIntExtra("position", 0);
+            layerName = intent.getStringExtra("value");
         } catch (NullPointerException e) {
             //nothing happens.
         }
@@ -143,15 +151,16 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private void storePolyline() {
-            PolygonOptions myPolygon = new PolygonOptions();
+            /*PolygonOptions myPolygon = new PolygonOptions();
             for (Marker entry : markers) {
                 myPolygon.add(entry.getPosition());
-            }
+            }*/
 
             Polyline polyline = new Polyline();
             polyline.setLat(markers.getFirst().getPosition().latitude);
             polyline.setLongit(markers.getFirst().getPosition().longitude);
             //TODO: set the Layer (give it to this class)
+            polyline.setLayer(daoSession.getLayerDao().loadByRowId(layerPos));
             //TODO: JSON conversion for storing the points
 
             PolylineDao polylineDao = daoSession.getPolylineDao();
@@ -159,10 +168,10 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private void storePolygon() {
-            PolygonOptions myPolygon = new PolygonOptions();
+            /*PolygonOptions myPolygon = new PolygonOptions();
             for (Marker entry : markers) {
                 myPolygon.add(entry.getPosition());
-            }
+            }*/
             Polygon polygon = new Polygon();
             polygon.setLat(markers.getFirst().getPosition().latitude);
             polygon.setLongit(markers.getFirst().getPosition().longitude);
