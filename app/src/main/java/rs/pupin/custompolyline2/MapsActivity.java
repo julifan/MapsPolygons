@@ -22,6 +22,8 @@ import java.util.List;
 import rs.pupin.model.DaoSession;
 import rs.pupin.model.PolygonDao;
 import rs.pupin.model.Polygon;
+import rs.pupin.model.Polyline;
+import rs.pupin.model.PolylineDao;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -52,10 +54,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //TODO: make it more specific to determine if intent is from drawingMapsAct
         try {
-        getIntent();
+            getIntent();
             intent = true;
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             //nothing happens.
         }
 
@@ -67,6 +68,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markers = new LinkedList<Marker>();
         //get db
         daoSession = ((CustomPolyline2Application) getApplicationContext()).getDaoSession();
+
+        PolylineDao polylineDao = daoSession.getPolylineDao();
+        List<Polyline> polylineList = polylineDao.loadAll();
+        if (!polylineList.isEmpty()) {
+            if (polylineList.get(polylineList.size() - 1).getMarkers() != null) {
+                textView.setText(polylineList.get(polylineList.size() - 1).getMarkers());
+            }
+        }
+
     }
 
     public void onClickAdd(View view) {
@@ -108,12 +118,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         //read out what was drawn last.
-        if(intent) {
+        if (intent) {
             //get polygons from db
             PolygonDao polygonDao = daoSession.getPolygonDao();
             List<Polygon> polygonList = polygonDao.loadAll();
             //display the last one
-            polygonList.get(polygonList.size()-1);
+            if (!polygonList.isEmpty()) polygonList.get(polygonList.size() - 1);
         }
 
     }

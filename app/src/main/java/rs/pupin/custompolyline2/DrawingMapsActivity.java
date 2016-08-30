@@ -19,8 +19,11 @@ import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.vision.text.Text;
+import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import rs.pupin.model.DaoSession;
 import rs.pupin.model.GroundOverlayDao;
@@ -76,6 +79,9 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
             //nothing happens.
         }
 
+        TextView textView = (TextView) findViewById(R.id.text);
+        textView.setText(layerName + " " + layerPos);
+
         //get db
         daoSession = ((CustomPolyline2Application) getApplicationContext()).getDaoSession();
         markers = new LinkedList<Marker>();
@@ -126,59 +132,55 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
      */
     public void onClickOk(View view) {
         if (!markers.isEmpty()) {
-        switch (item) {
-            case POLYGON:
-                storePolygon();
-                break;
-            case POLYLINE:
-                storePolyline();
-                break;
-            case POINT_OF_INTEREST:
-                storePointOfInterest();
-                break;
-            case GROUND_OVERLAY:
-                storeGroundOverlay();
-                break;
-            default:
-                break;
+            switch (item) {
+                case POLYGON:
+                    storePolygon();
+                    break;
+                case POLYLINE:
+                    storePolyline();
+                    break;
+                case POINT_OF_INTEREST:
+                    storePointOfInterest();
+                    break;
+                case GROUND_OVERLAY:
+                    storeGroundOverlay();
+                    break;
+                default:
+                    break;
+            }
+
+            markers = new LinkedList<Marker>();
+
+            Intent intent = new Intent(this, MapsActivity.class);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
-
-        markers = new LinkedList<Marker>();
-
-        Intent intent = new Intent(this, MapsActivity.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent); }
     }
 
     private void storePolyline() {
-            /*PolygonOptions myPolygon = new PolygonOptions();
-            for (Marker entry : markers) {
-                myPolygon.add(entry.getPosition());
-            }*/
+        //setting up the db object
+        Polyline polyline = new Polyline();
+        polyline.setLat(markers.getFirst().getPosition().latitude);
+        polyline.setLongit(markers.getFirst().getPosition().longitude);
+        polyline.setLayer(daoSession.getLayerDao().loadAll().get(layerPos - 1));
+        polyline.setMarkers(convertMarkers());
 
-            Polyline polyline = new Polyline();
-            polyline.setLat(markers.getFirst().getPosition().latitude);
-            polyline.setLongit(markers.getFirst().getPosition().longitude);
-            //TODO: set the Layer (give it to this class)
-            polyline.setLayer(daoSession.getLayerDao().loadByRowId(layerPos));
-            //TODO: JSON conversion for storing the points
-
-            PolylineDao polylineDao = daoSession.getPolylineDao();
-            polylineDao.insertOrReplace(polyline);
+        //actual storing
+        PolylineDao polylineDao = daoSession.getPolylineDao();
+        polylineDao.insert(polyline);
     }
 
     private void storePolygon() {
-            /*PolygonOptions myPolygon = new PolygonOptions();
-            for (Marker entry : markers) {
-                myPolygon.add(entry.getPosition());
-            }*/
-            Polygon polygon = new Polygon();
-            polygon.setLat(markers.getFirst().getPosition().latitude);
-            polygon.setLongit(markers.getFirst().getPosition().longitude);
-            //TODO: same as above
+        //setting up the db object
+        Polygon polygon = new Polygon();
+        polygon.setLat(markers.getFirst().getPosition().latitude);
+        polygon.setLongit(markers.getFirst().getPosition().longitude);
+        polygon.setLayer(daoSession.getLayerDao().loadAll().get(layerPos - 1));
+        polygon.setMarkers(convertMarkers());
 
-            PolygonDao polygonDao = daoSession.getPolygonDao();
-            polygonDao.insertOrReplace(polygon);
+        //actual storing
+        PolygonDao polygonDao = daoSession.getPolygonDao();
+        polygonDao.insertOrReplace(polygon);
     }
 
     /**
@@ -187,25 +189,39 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
      * TODO: give user error message in case of multiple markers.
      */
     private void storePointOfInterest() {
-            Marker marker = markers.get(markers.size() - 1);
-            rs.pupin.model.PointOfInterest pointOfInterest = new rs.pupin.model.PointOfInterest();
-            pointOfInterest.setLat(marker.getPosition().latitude);
-            pointOfInterest.setLongit(marker.getPosition().longitude);
-            pointOfInterest.setComment(marker.getSnippet());
-            //TODO: set Layer
+        Marker marker = markers.get(markers.size() - 1);
+        rs.pupin.model.PointOfInterest pointOfInterest = new rs.pupin.model.PointOfInterest();
+        pointOfInterest.setLat(marker.getPosition().latitude);
+        pointOfInterest.setLongit(marker.getPosition().longitude);
+        pointOfInterest.setComment(marker.getSnippet());
+        pointOfInterest.setLayer(daoSession.getLayerDao().loadAll().get(layerPos - 1));
 
-            PointOfInterestDao pointOfInterestDao = daoSession.getPointOfInterestDao();
-            pointOfInterestDao.insertOrReplace(pointOfInterest);
+        PointOfInterestDao pointOfInterestDao = daoSession.getPointOfInterestDao();
+        pointOfInterestDao.insertOrReplace(pointOfInterest);
     }
 
     private void storeGroundOverlay() {
         rs.pupin.model.GroundOverlay groundOverlay = new rs.pupin.model.GroundOverlay();
         groundOverlay.setLat(markers.getFirst().getPosition().latitude);
         groundOverlay.setLongit(markers.getFirst().getPosition().longitude);
-        //TODO: set rest of params
-        //width, height, rotation, path, layer
+        groundOverlay.setLayer(daoSession.getLayerDao().loadAll().get(layerPos - 1));
+        //TODO: set width, height, rotation, path
 
         GroundOverlayDao groundOverlayDao = daoSession.getGroundOverlayDao();
         groundOverlayDao.insertOrReplace(groundOverlay);
+    }
+
+    /**
+     * converts the global markers List to JSON
+     * Only takes care of the coordinates. Rest is ignored.
+     * @return json of the list
+     */
+    private String convertMarkers() {
+        List<Vec2f> latLong = new ArrayList<Vec2f>();
+        for (Marker marker : markers) {
+            latLong.add(new Vec2f((float) marker.getPosition().latitude, (float) marker.getPosition().longitude));
+        }
+        String json = new Gson().toJson(latLong);
+        return json;
     }
 }

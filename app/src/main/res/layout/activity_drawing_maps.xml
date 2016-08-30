@@ -27,6 +27,15 @@
                 android:text="@string/ok" />
         </TableRow>
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/text"
+                android:text="@string/empty" />
+        </TableRow>
 
     </TableLayout>
 

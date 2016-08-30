@@ -36,12 +36,16 @@ public class ShapesListActivity extends AppCompatActivity {
                         switch (position) {
                             case 0:
                                 makeIntent(ShapesEnum.POLYGON);
+                                break;
                             case 1:
                                 makeIntent(ShapesEnum.POLYLINE);
+                                break;
                             case 2:
                                 makeIntent(ShapesEnum.POINT_OF_INTEREST);
+                                break;
                             case 3:
                                 makeIntent(ShapesEnum.GROUND_OVERLAY);
+                                break;
                         }
                     }
                 };

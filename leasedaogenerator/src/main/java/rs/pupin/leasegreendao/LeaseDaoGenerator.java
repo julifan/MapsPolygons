@@ -14,15 +14,15 @@ public class LeaseDaoGenerator {
      * @throws Exception hopefully not
      */
     public static void main(String args[]) throws Exception {
-        Schema schema = new Schema(3, "rs.pupin.model");
+        Schema schema = new Schema(4, "rs.pupin.model");
         //map layers
         Entity layer = schema.addEntity("Layer");
-        layer.addIdProperty().autoincrement();
+        layer.addIdProperty().primaryKey().autoincrement();
         layer.addStringProperty("name");
 
         //polyline table
         Entity polyline = schema.addEntity("Polyline");
-        polyline.addIdProperty().autoincrement();
+        polyline.addIdProperty().primaryKey().autoincrement();
         polyline.addDoubleProperty("lat");
         polyline.addDoubleProperty("longit");
         polyline.addStringProperty("markers");
@@ -32,7 +32,7 @@ public class LeaseDaoGenerator {
 
         //polygon table
         Entity polygon = schema.addEntity("Polygon");
-        polygon.addIdProperty().autoincrement();
+        polygon.addIdProperty().primaryKey().autoincrement();
         polygon.addDoubleProperty("lat");
         polygon.addDoubleProperty("longit");
         polygon.addStringProperty("markers");
@@ -42,7 +42,7 @@ public class LeaseDaoGenerator {
 
         //point of interest table
         Entity pointOfInterest = schema.addEntity("PointOfInterest");
-        pointOfInterest.addIdProperty().autoincrement();
+        pointOfInterest.addIdProperty().primaryKey().autoincrement();
         pointOfInterest.addStringProperty("comment");
         pointOfInterest.addDoubleProperty("lat");
         pointOfInterest.addDoubleProperty("longit");
@@ -51,7 +51,7 @@ public class LeaseDaoGenerator {
         pointOfInterest.addToOne(layer, layerIdProperty3);
 
         Entity groundOverlay = schema.addEntity("GroundOverlay");
-        groundOverlay.addIdProperty().autoincrement();
+        groundOverlay.addIdProperty().primaryKey().autoincrement();
         groundOverlay.addStringProperty("path");
         groundOverlay.addDoubleProperty("lat");
         groundOverlay.addDoubleProperty("longit");
