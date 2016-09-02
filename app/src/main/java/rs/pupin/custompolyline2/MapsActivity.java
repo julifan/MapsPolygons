@@ -78,7 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         textView = (TextView) findViewById(R.id.textView);
         textView.setText("welcome!");
 
-
         init();
     }
 
@@ -215,17 +214,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (pos) {
             case 0:
                 shape = ShapesEnum.POLYGON;
+                showDrawingFragment();
                 break;
             case 1:
                 shape = ShapesEnum.POLYLINE;
+                showDrawingFragment();
                 break;
             case 2:
                 shape = ShapesEnum.POINT_OF_INTEREST;
+                showDrawingFragment();
                 break;
             case 3:
                 shape = ShapesEnum.GROUND_OVERLAY;
+                ImageChoosingFragment imageChoosingFragment = new ImageChoosingFragment();
+                imageChoosingFragment.show(getFragmentManager(), "choosing");
                 break;
         }
+
+    }
+
+    private void showDrawingFragment() {
         setMapClickable();
         //show next Fragment
         DrawingFragment drawingFragment = new DrawingFragment();
@@ -318,11 +326,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //empty markers
             markers = new LinkedList<Marker>();
         }
-    }
-
-    public void onClickAdd(View view) {
-        Intent intent = new Intent(MapsActivity.this, LayerListActivity.class);
-        startActivity(intent);
     }
 
     private void setMapClickable() {

@@ -21,7 +21,7 @@
     <string name="showShapes">Show Shapes on this layer!</string>
     <string name="finished">Finished Drawing!</string>
     <string name="showShapesAtLayer">Show Shapes a layer</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="whereFrom">From where should your image be?</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 </resources>

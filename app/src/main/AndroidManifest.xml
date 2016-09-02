@@ -46,7 +46,7 @@
             android:name=".DrawingMapsActivity"
             android:label="@string/title_activity_drawing_maps" />
         <activity android:name=".LayerListActivity" />
-        <activity android:name=".CreateLayerActivity"></activity>
+        <activity android:name=".CreateLayerActivity" />
     </application>
 
 </manifest>
