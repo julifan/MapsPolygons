@@ -8,8 +8,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 public class ShapesListActivity extends AppCompatActivity {
-
-    //TODO: initialize properly
     int layerPos;
     String layerName;
 
@@ -32,7 +30,6 @@ public class ShapesListActivity extends AppCompatActivity {
                                             View v,
                                             int position,
                                             long id) {
-                        //TODO: figure out position dynamically
                         switch (position) {
                             case 0:
                                 makeIntent(ShapesEnum.POLYGON);

@@ -13,6 +13,7 @@ public class Vec2f {
         this.y = y;
     }
 
+
     public float getX() {
         return this.x;
     }

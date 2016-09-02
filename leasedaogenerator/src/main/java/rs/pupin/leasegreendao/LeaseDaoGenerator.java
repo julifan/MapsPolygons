@@ -14,7 +14,7 @@ public class LeaseDaoGenerator {
      * @throws Exception hopefully not
      */
     public static void main(String args[]) throws Exception {
-        Schema schema = new Schema(4, "rs.pupin.model");
+        Schema schema = new Schema(6, "rs.pupin.model");
         //map layers
         Entity layer = schema.addEntity("Layer");
         layer.addIdProperty().primaryKey().autoincrement();

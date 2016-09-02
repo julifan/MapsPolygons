@@ -35,8 +35,6 @@ public class LayerListActivity extends ListActivity {
                                             View v,
                                             int position,
                                             long id) {
-                        //TODO: figure out position dynamically
-                        //TODO: put in intent which layer was chosen
                             if (position == 0) {
                                 //start activity for creating a new layer.
                                 createLayer();

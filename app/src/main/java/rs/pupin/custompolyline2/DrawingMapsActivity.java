@@ -36,7 +36,7 @@ import rs.pupin.model.PolylineDao;
 /**
  * is called by ShapesListActivity with an intent.
  * Intent contains what should be drawn.
- * TODO design storing in the db well
+ *
  */
 public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -72,8 +72,7 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
         try {
             Intent intent = getIntent();
             item = (ShapesEnum) intent.getSerializableExtra("item");
-            //TODO: set better default value and check for it later on
-            layerPos = intent.getIntExtra("position", 0);
+            layerPos = intent.getIntExtra("position", -1);
             layerName = intent.getStringExtra("value");
         } catch (NullPointerException e) {
             //nothing happens.
@@ -186,7 +185,6 @@ public class DrawingMapsActivity extends FragmentActivity implements OnMapReadyC
     /**
      * stores a single marker as a point of interest.
      * If user set multiple markers, store the last that was set.
-     * TODO: give user error message in case of multiple markers.
      */
     private void storePointOfInterest() {
         Marker marker = markers.get(markers.size() - 1);
