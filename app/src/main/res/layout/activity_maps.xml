@@ -12,6 +12,10 @@
         android:gravity="center_horizontal"
         android:text="@string/welcome" />
 
+    <ImageView android:id="@+id/imageViewTest"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

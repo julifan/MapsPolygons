@@ -1,15 +1,23 @@
 package rs.pupin.custompolyline2;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,17 +47,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ShapesListFragment.ShapesListListener,
         DrawingFragment.DrawingListener,
         StartFragment.StartListener,
-        CreateLayerFragment.CreateLayerListener {
+        CreateLayerFragment.CreateLayerListener,
+        ImageChoosingFragment.ImageListener {
 
     private GoogleMap mMap;
     private DaoSession daoSession;
 
     private TextView textView;
+    private ImageView imageView;
+
+    private ImageChoosingFragment imageChoosingFragment = null;
 
     private boolean draw;
     private boolean mapReady = false;
 
     private LinkedList<Marker> markers;
+
+    public static final int REQUEST_CAMERA = 1;
 
     /**
      * currently active/chosen layer
@@ -77,6 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         textView = (TextView) findViewById(R.id.textView);
         textView.setText("welcome!");
+        imageView = (ImageView) findViewById(R.id.imageViewTest);
 
         init();
     }
@@ -94,6 +109,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, start, "layers");
         ft.commit();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     /**
@@ -118,6 +160,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             showListLayerFragment();
         }
     }
+
+    /**
+     * refers to ImageChoosingFragment. Is called when the picture is chosen.
+     * Places it on the map and gives user the possibility for rotating/etc.
+     *
+     * @param path   imagepath
+     * @param bitmap actual img
+     */
+    public void imageChosen(String path, Bitmap bitmap) {
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+        BitmapDescriptor bd = BitmapDescriptorFactory
+                .fromBitmap(bitmap);
+        groundOverlayOptions.image(bd);
+        groundOverlayOptions.position(new LatLng(37.7750, 122.4183), 1.0f);
+        groundOverlayOptions.clickable(true);
+        mMap.addGroundOverlay(groundOverlayOptions);
+
+        textView.setText("success");
+        imageView.setImageBitmap(bitmap);
+    }
+
 
     private void showListLayerFragment() {
         LayerListFragment layers = new LayerListFragment();
@@ -226,8 +289,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             case 3:
                 shape = ShapesEnum.GROUND_OVERLAY;
-                ImageChoosingFragment imageChoosingFragment = new ImageChoosingFragment();
-                imageChoosingFragment.show(getFragmentManager(), "choosing");
+                imageChoosingFragment = new ImageChoosingFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, imageChoosingFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                fragmentTransaction.commit();
+                //imageChoosingFragment.show(getFragmentManager(), "choosing");
                 break;
         }
 
