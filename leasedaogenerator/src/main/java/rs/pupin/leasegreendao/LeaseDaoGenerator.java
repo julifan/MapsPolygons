@@ -14,7 +14,7 @@ public class LeaseDaoGenerator {
      * @throws Exception hopefully not
      */
     public static void main(String args[]) throws Exception {
-        Schema schema = new Schema(6, "rs.pupin.model");
+        Schema schema = new Schema(11, "rs.pupin.model");
         //map layers
         Entity layer = schema.addEntity("Layer");
         layer.addIdProperty().primaryKey().autoincrement();
@@ -57,11 +57,11 @@ public class LeaseDaoGenerator {
         groundOverlay.addDoubleProperty("longit");
         groundOverlay.addDoubleProperty("width");
         groundOverlay.addDoubleProperty("height");
-        groundOverlay.addDoubleProperty("rotation");
+        //groundOverlay.addDoubleProperty("rotation");
         //to-One-relation to layer
         Property layerIdProperty4 = groundOverlay.addLongProperty("map_layer_id").getProperty();
         groundOverlay.addToOne(layer, layerIdProperty4);
 
-        new DaoGenerator().generateAll(schema, "../app/src/main/java");
+        new DaoGenerator().generateAll(schema, "C:\\Users\\Larissa\\AndroidStudioProjects\\CustomPolyline2\\app\\src\\main\\java");
     }
 }

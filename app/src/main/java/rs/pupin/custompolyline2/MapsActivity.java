@@ -1,12 +1,12 @@
 package rs.pupin.custompolyline2;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,21 +55,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DaoSession daoSession;
 
     private TextView textView;
-    private ImageView imageView;
+    private iImageView imageViewTransform;
 
     private ImageChoosingFragment imageChoosingFragment = null;
 
     private boolean draw;
     private boolean mapReady = false;
 
+    /**
+     * path of actual img for GroundOverlay
+     */
+    private String myPath;
+
+
     private LinkedList<Marker> markers;
+    private GroundOverlay groundOverlayToStore;
+    private com.google.android.gms.maps.model.GroundOverlay groundOverlay;
 
     public static final int REQUEST_CAMERA = 1;
 
     /**
      * currently active/chosen layer
      */
-    //private int layer;
     private String layerName;
     /**
      * current shape user selected to draw
@@ -91,7 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         textView = (TextView) findViewById(R.id.textView);
         textView.setText("welcome!");
-        imageView = (ImageView) findViewById(R.id.imageViewTest);
+        imageViewTransform = (iImageView) findViewById(R.id.transformImage);
+
 
         init();
     }
@@ -99,6 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void init() {
 
         markers = new LinkedList<Marker>();
+        groundOverlayToStore = null;
         //get db
         daoSession = ((CustomPolyline2Application) getApplicationContext()).getDaoSession();
 
@@ -109,6 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, start, "layers");
         ft.commit();
+
     }
 
     @Override
@@ -169,16 +180,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param bitmap actual img
      */
     public void imageChosen(String path, Bitmap bitmap) {
-        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+        //final String myPath = path;
+        myPath = path;
+        //TODO: set pic in imgview. allow user to transform img.
+        imageViewTransform.setBitmap(bitmap);
+        imageViewTransform.setClickable(true);
+        //in on finished() set the actual groundOverlay depending on img.
+
+        /*final GroundOverlayOptions options = new GroundOverlayOptions();
         BitmapDescriptor bd = BitmapDescriptorFactory
                 .fromBitmap(bitmap);
-        groundOverlayOptions.image(bd);
-        groundOverlayOptions.position(new LatLng(37.7750, 122.4183), 1.0f);
-        groundOverlayOptions.clickable(true);
-        mMap.addGroundOverlay(groundOverlayOptions);
+        options.image(bd);
 
-        textView.setText("success");
-        imageView.setImageBitmap(bitmap);
+        groundOverlayToStore = new GroundOverlay();
+
+        textView.setText("Tap the map for positioning of the image");
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {*/
+
+            /**
+             * Listener for the Clicks on the map
+             * @param latLng lat and longitude where the click was
+             */
+            /*@Override
+            public void onMapClick(LatLng latLng) {
+                options.position(latLng, 100000.0f, 100000.0f);
+                groundOverlay = mMap.addGroundOverlay(options);
+
+                //set parameters of ground overlay object to store
+                groundOverlayToStore.setLat((double) options.getLocation().latitude);
+                groundOverlayToStore.setLongit((double) options.getLocation().longitude);
+                groundOverlayToStore.setPath(myPath);
+                groundOverlayToStore.setHeight((double) options.getHeight());
+                groundOverlayToStore.setWidth((double) options.getWidth());
+            }
+        });
+        showDrawingFragment();
+        textView.setText("imagefragment funktioniert");*/
     }
 
 
@@ -240,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showShapesListFragment();
             }
         } else {
-            //do not allow to create new layers bc shapes at a ceratin layer should be just shown
+            //do not allow to create new layers bc shapes at a certain layer should be just shown
             if (pos > 0) {
                 //store selected layer
                 //layer = pos - 1;
@@ -277,14 +314,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (pos) {
             case 0:
                 shape = ShapesEnum.POLYGON;
+                setMapClickableMarkers();
                 showDrawingFragment();
                 break;
             case 1:
                 shape = ShapesEnum.POLYLINE;
+                setMapClickableMarkers();
                 showDrawingFragment();
                 break;
             case 2:
                 shape = ShapesEnum.POINT_OF_INTEREST;
+                setMapClickableMarkers();
                 showDrawingFragment();
                 break;
             case 3:
@@ -302,7 +342,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void showDrawingFragment() {
-        setMapClickable();
+        //setMapClickableMarkers();
         //show next Fragment
         DrawingFragment drawingFragment = new DrawingFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -346,6 +386,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         pointOfInterest.getLongit().floatValue()));
             }
 
+            for (GroundOverlay groundOverlay : groundOverlayList) {
+                showGroundOverlay(groundOverlay);
+            }
+
             //TODO: show GroundOverlays
         }
     }
@@ -366,9 +410,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.clear();
     }
 
-    //TODO: for case groundOverlay ask for image!
     public void okButtonClicked() {
-        if (!markers.isEmpty()) {
+        if (!markers.isEmpty() || groundOverlayToStore != null) {
             //setMapUnclickable();
             //mMap.clear();
             //store and show
@@ -387,7 +430,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     break;
                 case GROUND_OVERLAY:
                     storeGroundOverlay();
-                    showGroundOverlay();
+                    StartFragment startFragment = new StartFragment();
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_container, startFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    fragmentTransaction.commit();
+
+                    setMapUnclickable();
+                    draw = false;
+                    mMap.clear();
+                    //showGroundOverlay();
                     break;
             }
 
@@ -396,7 +449,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void setMapClickable() {
+    private void setMapClickableMarkers() {
         //make map clickable
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -490,15 +543,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void storeGroundOverlay() {
         rs.pupin.model.GroundOverlay groundOverlay = new rs.pupin.model.GroundOverlay();
-        groundOverlay.setLat(markers.getFirst().getPosition().latitude);
-        groundOverlay.setLongit(markers.getFirst().getPosition().longitude);
+        groundOverlay = groundOverlayToStore;
         List<Layer> layers = daoSession.getLayerDao().queryBuilder().where(LayerDao.Properties.Name.eq(layerName)).list();
         if (!layers.isEmpty()) {
             Long mapLayerId = layers.get(0).getId();
             groundOverlay.setLayer(layers.get(0));
         }
-        //groundOverlay.setLayer(daoSession.getLayerDao().loadAll().get(layer));
-        //TODO: set width, height, rotation, path
 
         GroundOverlayDao groundOverlayDao = daoSession.getGroundOverlayDao();
         groundOverlayDao.insertOrReplace(groundOverlay);
@@ -571,8 +621,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(markerOptions);
     }
 
-    //TODO: implement
     private void showGroundOverlay() {
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+        groundOverlayOptions.position(new LatLng(groundOverlayToStore.getLat(),
+                        groundOverlayToStore.getLongit()),
+                groundOverlayToStore.getWidth().floatValue(),
+                groundOverlayToStore.getHeight().floatValue());
+        final File image = new File(groundOverlayToStore.getPath());
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+        bitmap = Bitmap.createBitmap(bitmap);
+
+        BitmapDescriptor bd = BitmapDescriptorFactory
+                .fromBitmap(bitmap);
+        groundOverlayOptions.image(bd);
+        mMap.addGroundOverlay(groundOverlayOptions);
+    }
+
+    private void showGroundOverlay(GroundOverlay groundOverlay) {
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+        groundOverlayOptions.position(new LatLng(groundOverlay.getLat(),
+                        groundOverlay.getLongit()),
+                groundOverlay.getWidth().floatValue(),
+                groundOverlay.getHeight().floatValue());
+        final File image = new File(groundOverlay.getPath());
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+        bitmap = Bitmap.createBitmap(bitmap);
+
+        BitmapDescriptor bd = BitmapDescriptorFactory
+                .fromBitmap(bitmap);
+        groundOverlayOptions.image(bd);
+        mMap.addGroundOverlay(groundOverlayOptions);
     }
 
     /**

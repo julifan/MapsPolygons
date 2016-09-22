@@ -12,15 +12,15 @@
         android:gravity="center_horizontal"
         android:text="@string/welcome" />
 
-    <ImageView android:id="@+id/imageViewTest"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_weight="3"
         android:layout_height="match_parent" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -31,5 +31,15 @@
         android:layout_height="match_parent"
         android:layout_weight="2"
         tools:context="rs.pupin.custompolyline2.MapsActivity" />
+
+        <rs.pupin.custompolyline2.iImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:id="@+id/transformImage"
+            android:clickable="true"
+            android:scaleType="matrix"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

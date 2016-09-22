@@ -2,13 +2,17 @@ package rs.pupin.custompolyline2;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import android.*;
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -42,7 +46,8 @@ public class ImageChoosingFragment extends Fragment {
 
     private static final int ACTION_TAKE_PHOTO_B = 1;
     private static final int ACTION_TAKE_PHOTO_S = 2;
-    private static final int ACTION_TAKE_VIDEO = 3;
+
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     private static final String BITMAP_STORAGE_KEY = "viewbitmap";
     private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageviewvisibility";
@@ -136,7 +141,7 @@ public class ImageChoosingFragment extends Fragment {
 
 		/* Figure out which way needs to be reduced less */
         int scaleFactor = 1;
-        if ((targetW > 0) || (targetH > 0)) {
+        if ((targetW > 0) && (targetH > 0)) {
             scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         }
 
@@ -149,13 +154,15 @@ public class ImageChoosingFragment extends Fragment {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
 		/* Associate the Bitmap to the ImageView */
-        mImageView.setImageBitmap(bitmap);
+        //mImageView.setImageBitmap(bitmap);
         //send the activity the image and the path where it is stored
         //path: mCurrentPhotoPath
         listener.imageChosen(mCurrentPhotoPath, bitmap);
         //mVideoUri = null;
         mImageView.setVisibility(View.VISIBLE);
         //mVideoView.setVisibility(View.INVISIBLE);
+        Log.d("IMAGE", "set image");
+        Log.d("IMAGE", mCurrentPhotoPath);
     }
 
     private void galleryAddPic() {
@@ -186,12 +193,10 @@ public class ImageChoosingFragment extends Fragment {
             //}
 
 
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
             switch (actionCode) {
                 case ACTION_TAKE_PHOTO_B:
                     File f = null;
-
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     try {
                         f = setUpPhotoFile();
                         mCurrentPhotoPath = f.getAbsolutePath();
@@ -201,13 +206,22 @@ public class ImageChoosingFragment extends Fragment {
                         f = null;
                         mCurrentPhotoPath = null;
                     }
-                    break;
 
+                    startActivityForResult(takePictureIntent, actionCode);
+                    break;
+                case ACTION_TAKE_PHOTO_S:
+                    Intent intent = new Intent();
+                    // Show only images, no videos or anything else
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    // Always show the chooser (if there are multiple options available)
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                    startActivityForResult(intent, actionCode);
+                    break;
                 default:
                     break;
             } // switch
 
-            startActivityForResult(takePictureIntent, actionCode);
             //else nothing happens
         }
 
@@ -221,7 +235,7 @@ public class ImageChoosingFragment extends Fragment {
     private void handleSmallCameraPhoto(Intent intent) {
         Bundle extras = intent.getExtras();
         mImageBitmap = (Bitmap) extras.get("data");
-        mImageView.setImageBitmap(mImageBitmap);
+        //mImageView.setImageBitmap(mImageBitmap);
         //mVideoUri = null;
         mImageView.setVisibility(View.VISIBLE);
         //mVideoView.setVisibility(View.INVISIBLE);
@@ -347,12 +361,46 @@ public class ImageChoosingFragment extends Fragment {
             } // ACTION_TAKE_PHOTO_B
 
             case ACTION_TAKE_PHOTO_S: {
-                if (resultCode == Activity.RESULT_OK) {
-                    handleSmallCameraPhoto(data);
+                if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+
+                    Uri uri = data.getData();
+
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                        //TODO hier an die activity weiterreichen.
+                        InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
+                        String filename = "/sdcard/" + getFileName_CustomFormat() + ".mp4";
+                        copyInputStreamToFile(inputStream, new File(filename));
+                        listener.imageChosen(filename, bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             } // ACTION_TAKE_PHOTO_S
         } // switch
+    }
+
+    private String getFileName_CustomFormat() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss");
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        return strDate;
+    }
+
+    private void copyInputStreamToFile( InputStream in, File file ) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*// Some lifecycle callbacks so that the image can survive orientation change
@@ -412,6 +460,7 @@ public class ImageChoosingFragment extends Fragment {
         }
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -419,6 +468,18 @@ public class ImageChoosingFragment extends Fragment {
         if (context instanceof Activity) {
             a = (Activity) context;
             this.listener = (ImageListener) a;
+        }
+    }
+    /*
+     * Deprecated on API 23
+     * Use onAttachToContext instead
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            this.listener = (ImageListener) activity;
         }
     }
 

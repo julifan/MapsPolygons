@@ -15,7 +15,6 @@ public class GroundOverlay {
     private Double longit;
     private Double width;
     private Double height;
-    private Double rotation;
     private Long map_layer_id;
 
     /** Used to resolve relations */
@@ -35,14 +34,13 @@ public class GroundOverlay {
         this.id = id;
     }
 
-    public GroundOverlay(Long id, String path, Double lat, Double longit, Double width, Double height, Double rotation, Long map_layer_id) {
+    public GroundOverlay(Long id, String path, Double lat, Double longit, Double width, Double height, Long map_layer_id) {
         this.id = id;
         this.path = path;
         this.lat = lat;
         this.longit = longit;
         this.width = width;
         this.height = height;
-        this.rotation = rotation;
         this.map_layer_id = map_layer_id;
     }
 
@@ -98,14 +96,6 @@ public class GroundOverlay {
 
     public void setHeight(Double height) {
         this.height = height;
-    }
-
-    public Double getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(Double rotation) {
-        this.rotation = rotation;
     }
 
     public Long getMap_layer_id() {

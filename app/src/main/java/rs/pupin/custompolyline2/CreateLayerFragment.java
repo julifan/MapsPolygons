@@ -1,8 +1,10 @@
 package rs.pupin.custompolyline2;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
@@ -54,6 +56,7 @@ public class CreateLayerFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -61,6 +64,19 @@ public class CreateLayerFragment extends Fragment implements View.OnClickListene
         if (context instanceof Activity) {
             a = (Activity) context;
             this.listener = (CreateLayerListener) a;
+        }
+    }
+
+    /*
+     * Deprecated on API 23
+     * Use onAttachToContext instead
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            this.listener = (CreateLayerListener) activity;
         }
     }
 }

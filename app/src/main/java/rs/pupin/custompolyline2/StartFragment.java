@@ -1,10 +1,13 @@
 package rs.pupin.custompolyline2;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +17,14 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class StartFragment extends Fragment implements View.OnClickListener{
+public class StartFragment extends Fragment implements View.OnClickListener {
     static interface StartListener {
         void drawSomethingNewButtonClicked();
+
         void showShapesAtLayerButtonClicked();
     }
 
     private StartListener listener;
-
 
 
     public StartFragment() {
@@ -47,15 +50,19 @@ public class StartFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         if (listener != null) {
             switch (v.getId()) {
-                case R.id.drawSomethingNew: listener.drawSomethingNewButtonClicked();
+                case R.id.drawSomethingNew:
+                    listener.drawSomethingNewButtonClicked();
                     break;
-                case R.id.showShapesAtLayer: listener.showShapesAtLayerButtonClicked();
+                case R.id.showShapesAtLayer:
+                    listener.showShapesAtLayerButtonClicked();
                     break;
-                default: break;
+                default:
+                    break;
             }
         }
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -63,6 +70,19 @@ public class StartFragment extends Fragment implements View.OnClickListener{
         if (context instanceof Activity) {
             a = (Activity) context;
             this.listener = (StartListener) a;
+        }
+    }
+
+    /*
+     * Deprecated on API 23
+     * Use onAttachToContext instead
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            this.listener = (StartListener) activity;
         }
     }
 

@@ -1,8 +1,10 @@
 package rs.pupin.custompolyline2;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
+import java.lang.annotation.Target;
 
 
 /**
@@ -62,6 +66,7 @@ public class DrawingFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -72,4 +77,16 @@ public class DrawingFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /*
+     * Deprecated on API 23
+     * Use onAttachToContext instead
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            this.listener = (DrawingListener) activity;
+        }
+    }
 }

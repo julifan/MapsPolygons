@@ -1,9 +1,11 @@
 package rs.pupin.custompolyline2;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -45,6 +47,7 @@ public class ShapesListFragment extends ListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -52,6 +55,19 @@ public class ShapesListFragment extends ListFragment {
         if (context instanceof Activity) {
             a = (Activity) context;
             this.listener = (ShapesListListener) a;
+        }
+    }
+
+    /*
+     * Deprecated on API 23
+     * Use onAttachToContext instead
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            this.listener = (ShapesListListener) activity;
         }
     }
 
