@@ -30,9 +30,10 @@ public class GroundOverlayDao extends AbstractDao<GroundOverlay, Long> {
         public final static Property Path = new Property(1, String.class, "path", false, "PATH");
         public final static Property Lat = new Property(2, Double.class, "lat", false, "LAT");
         public final static Property Longit = new Property(3, Double.class, "longit", false, "LONGIT");
-        public final static Property Width = new Property(4, Double.class, "width", false, "WIDTH");
-        public final static Property Height = new Property(5, Double.class, "height", false, "HEIGHT");
-        public final static Property Map_layer_id = new Property(6, Long.class, "map_layer_id", false, "MAP_LAYER_ID");
+        public final static Property Width = new Property(4, Float.class, "width", false, "WIDTH");
+        public final static Property Height = new Property(5, Float.class, "height", false, "HEIGHT");
+        public final static Property Rotation = new Property(6, Float.class, "rotation", false, "ROTATION");
+        public final static Property Map_layer_id = new Property(7, Long.class, "map_layer_id", false, "MAP_LAYER_ID");
     };
 
     private DaoSession daoSession;
@@ -57,7 +58,8 @@ public class GroundOverlayDao extends AbstractDao<GroundOverlay, Long> {
                 "\"LONGIT\" REAL," + // 3: longit
                 "\"WIDTH\" REAL," + // 4: width
                 "\"HEIGHT\" REAL," + // 5: height
-                "\"MAP_LAYER_ID\" INTEGER);"); // 6: map_layer_id
+                "\"ROTATION\" REAL," + // 6: rotation
+                "\"MAP_LAYER_ID\" INTEGER);"); // 7: map_layer_id
     }
 
     /** Drops the underlying database table. */
@@ -91,19 +93,24 @@ public class GroundOverlayDao extends AbstractDao<GroundOverlay, Long> {
             stmt.bindDouble(4, longit);
         }
  
-        Double width = entity.getWidth();
+        Float width = entity.getWidth();
         if (width != null) {
             stmt.bindDouble(5, width);
         }
  
-        Double height = entity.getHeight();
+        Float height = entity.getHeight();
         if (height != null) {
             stmt.bindDouble(6, height);
         }
  
+        Float rotation = entity.getRotation();
+        if (rotation != null) {
+            stmt.bindDouble(7, rotation);
+        }
+ 
         Long map_layer_id = entity.getMap_layer_id();
         if (map_layer_id != null) {
-            stmt.bindLong(7, map_layer_id);
+            stmt.bindLong(8, map_layer_id);
         }
     }
 
@@ -127,9 +134,10 @@ public class GroundOverlayDao extends AbstractDao<GroundOverlay, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // path
             cursor.isNull(offset + 2) ? null : cursor.getDouble(offset + 2), // lat
             cursor.isNull(offset + 3) ? null : cursor.getDouble(offset + 3), // longit
-            cursor.isNull(offset + 4) ? null : cursor.getDouble(offset + 4), // width
-            cursor.isNull(offset + 5) ? null : cursor.getDouble(offset + 5), // height
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // map_layer_id
+            cursor.isNull(offset + 4) ? null : cursor.getFloat(offset + 4), // width
+            cursor.isNull(offset + 5) ? null : cursor.getFloat(offset + 5), // height
+            cursor.isNull(offset + 6) ? null : cursor.getFloat(offset + 6), // rotation
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // map_layer_id
         );
         return entity;
     }
@@ -141,9 +149,10 @@ public class GroundOverlayDao extends AbstractDao<GroundOverlay, Long> {
         entity.setPath(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setLat(cursor.isNull(offset + 2) ? null : cursor.getDouble(offset + 2));
         entity.setLongit(cursor.isNull(offset + 3) ? null : cursor.getDouble(offset + 3));
-        entity.setWidth(cursor.isNull(offset + 4) ? null : cursor.getDouble(offset + 4));
-        entity.setHeight(cursor.isNull(offset + 5) ? null : cursor.getDouble(offset + 5));
-        entity.setMap_layer_id(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
+        entity.setWidth(cursor.isNull(offset + 4) ? null : cursor.getFloat(offset + 4));
+        entity.setHeight(cursor.isNull(offset + 5) ? null : cursor.getFloat(offset + 5));
+        entity.setRotation(cursor.isNull(offset + 6) ? null : cursor.getFloat(offset + 6));
+        entity.setMap_layer_id(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
      }
     
     /** @inheritdoc */

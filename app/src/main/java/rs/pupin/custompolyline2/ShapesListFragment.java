@@ -35,7 +35,6 @@ public class ShapesListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //TODO: improve
         String[] options = new String[] {"Polygon", "Polyline", "Point of Interest", "Ground Overlay"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
